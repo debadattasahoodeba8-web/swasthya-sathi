@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SwasthyaSathi – Your Health Partner</title>
+<link rel="manifest" href="manifest.json"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<section id="auth" class="login">
+ <div class="orb o1"></div><div class="orb o2"></div>
+ <span class="fl f1">💊</span><span class="fl f2">🩺</span><span class="fl f3">❤️</span><span class="fl f4">🧬</span>
+ <div class="hero">
+  <div class="logo"><span class="pulse">🩺</span> SwasthyaSathi</div>
+  <h1>Your health, <em>always with you.</em></h1>
+  <p>Check symptoms, get medicine alarms on time, find nearby doctors and call for help in one tap.</p>
+  <svg class="ecg" viewBox="0 0 400 60"><path d="M0 30H110L125 30L135 8L150 52L162 30H230L245 30L255 14L268 44L278 30H400"/></svg>
+  <div class="tags"><span>🧪 Symptom check</span><span>💊 Medicine alarm</span><span>📍 Nearby doctors</span><span>🔒 Private</span></div>
+ </div>
+ <div class="formcard">
+  <h2>Welcome 👋</h2><p class="sub">Login or register with your mobile number</p>
+  <input id="name" placeholder="👤 Your name"><input id="phone" placeholder="📱 Mobile number (10 digits)" maxlength="10" inputmode="numeric">
+  <label class="consent"><input type="checkbox" id="consent"><span>I agree to store my health data securely to get health guidance.</span></label>
+  <button id="sendBtn" class="cta" onclick="sendOtp()">Send OTP</button>
+  <div id="otpBox" hidden><input id="otp" placeholder="🔑 Enter 6-digit OTP" maxlength="6" inputmode="numeric"><button class="cta" onclick="verifyOtp()">Verify &amp; Continue</button></div>
+  <div class="sos2"><span>🚨 Emergency? Call now, no login needed</span><a class="btn c112" href="tel:112">📞 112</a><a class="btn c108" href="tel:108">🚑 108 Ambulance</a></div>
+ </div>
+</section>
+<div id="app" hidden>
+<header><b>🩺 SwasthyaSathi</b><span id="hi"></span><button class="ghost" onclick="logout()">Logout</button></header>
+<nav id="nav">
+ <button data-t="dash">📊 Dashboard</button><button data-t="check">🧪 Symptoms</button><button data-t="body">🧍 Body</button>
+ <button data-t="meds">💊 Medicine</button><button data-t="docs">👨‍⚕️ Doctors</button><button data-t="bot">🤖 AI Bot</button>
+ <button data-t="rec">🗂 Records</button><button data-t="sos" class="sosb">🚨 SOS</button></nav>
+<main>
+<section id="dash" class="tab"><div class="grid">
+ <div class="card"><h3>Health Score</h3><div id="score" class="big">--</div><small>Based on reminders, water and checkups</small></div>
+ <div class="card"><h3>💧 Water</h3><div class="big" id="water">0</div><small>/ 8 glasses</small><br><button onclick="addWater()">+1 glass</button></div>
+ <div class="card"><h3>🔥 Medicine Streak</h3><div class="big" id="streak">0</div><small>days</small></div>
+ <div class="card"><h3>⚖️ BMI</h3><input id="h" placeholder="Height (cm)" type="number"><input id="w" placeholder="Weight (kg)" type="number"><button onclick="bmi()">Check</button><p id="bmiOut"></p></div>
+</div></section>
+<section id="check" class="tab card"><h2>Symptom Checker</h2>
+ <div class="row"><input id="age" type="number" placeholder="Age"><select id="gender"><option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option></select>
+ <select id="sev"><option value="1">Mild</option><option value="2">Moderate</option><option value="3">Severe</option></select><input id="days" type="number" placeholder="For how many days?"></div>
+ <label id="pregL" hidden><input type="checkbox" id="preg" style="width:auto"> Are you pregnant?</label>
+ <div id="symList" class="chips"></div><button onclick="runCheck()">Analyze</button><div id="result"></div></section>
+<section id="body" class="tab card"><h2>Full Body Checker</h2><p>Select the area where you feel discomfort:</p><div id="parts" class="chips"></div></section>
+<section id="meds" class="tab card"><h2>Medicine Reminder</h2>
+ <div class="row"><input id="mname" placeholder="Medicine name"><input id="mtime" type="time"><button onclick="addMed()">Add</button></div>
+ <button onclick="enableAlerts()">🔔 Turn on phone alerts</button><p id="alertState"><small>Alerts reach you even when this site is closed.</small></p><ul id="medList"></ul></section>
+<section id="docs" class="tab card"><h2>Nearby Doctors</h2>
+ <select id="spec"></select><button onclick="findDoc()">📍 Find near me</button><p><small>Google Maps will open with doctors near your location.</small></p></section>
+<section id="bot" class="tab card"><h2>🤖 AI Health Bot</h2><div id="chat"></div>
+ <div class="row"><input id="msg" placeholder="Ask: sleep, diet, stress, sugar, bp..." onkeydown="if(event.key==='Enter')ask()"><button onclick="ask()">Send</button></div></section>
+<section id="rec" class="tab card"><h2>My Health Records</h2><ul id="recList"></ul>
+ <button onclick="exportData()">⬇️ Download my data</button><button class="ghost" onclick="requestDelete()">📩 Request data deletion</button></section>
+<section id="sos" class="tab card"><h2>🚨 Emergency SOS</h2>
+ <input id="ecName" placeholder="Emergency contact name"><input id="ecPhone" placeholder="Contact number with country code (91...)">
+ <button class="sosbig" onclick="sos()">SOS: Send my location</button>
+ <a class="btn" href="tel:112">📞 Call 112</a><a class="btn" href="tel:108">🚑 Call 108 Ambulance</a></section>
+</main>
+<footer><small>⚠️ For information only, not a substitute for a doctor. In an emergency call 112/108 immediately.</small></footer>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script src="js/firebase-config.js"></script><script src="js/data.js"></script><script src="js/app.js"></script></body></html>
