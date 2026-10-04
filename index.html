@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="hi"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SwasthyaSathi – Aapka Health Partner</title>
+<link rel="manifest" href="manifest.json"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<section id="auth" class="card center">
+ <h1>🩺 SwasthyaSathi</h1><p>Phone number se register / login karein</p>
+ <input id="name" placeholder="Aapka naam"><input id="phone" placeholder="Phone (10 digit)" maxlength="10" inputmode="numeric">
+ <input id="pin" type="password" placeholder="4-digit PIN banayein" maxlength="4" inputmode="numeric">
+ <button onclick="sendOtp()">OTP bhejein</button>
+ <div id="otpBox" hidden><input id="otp" placeholder="OTP daalein" maxlength="4"><button onclick="verifyOtp()">Verify</button></div>
+</section>
+<div id="app" hidden>
+<header><b>🩺 SwasthyaSathi</b><span id="hi"></span><button class="ghost" onclick="logout()">Logout</button></header>
+<nav id="nav">
+ <button data-t="dash">📊 Dashboard</button><button data-t="check">🧪 Symptoms</button><button data-t="body">🧍 Body</button>
+ <button data-t="meds">💊 Medicine</button><button data-t="docs">👨‍⚕️ Doctor</button><button data-t="bot">🤖 AI Bot</button>
+ <button data-t="rec">🗂 Records</button><button data-t="sos" class="sosb">🚨 SOS</button></nav>
+<main>
+<section id="dash" class="tab"><div class="grid">
+ <div class="card"><h3>Health Score</h3><div id="score" class="big">--</div><small>Reminders, water aur checkups se banta hai</small></div>
+ <div class="card"><h3>💧 Paani</h3><div class="big" id="water">0</div><small>/ 8 glass</small><br><button onclick="addWater()">+1 glass</button></div>
+ <div class="card"><h3>🔥 Medicine Streak</h3><div class="big" id="streak">0</div><small>din</small></div>
+ <div class="card"><h3>⚖️ BMI</h3><input id="h" placeholder="Height cm" type="number"><input id="w" placeholder="Weight kg" type="number"><button onclick="bmi()">Check</button><p id="bmiOut"></p></div>
+</div></section>
+<section id="check" class="tab card"><h2>Symptom Checker</h2>
+ <div class="row"><input id="age" type="number" placeholder="Umar"><select id="gender"><option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option></select>
+ <select id="sev"><option value="1">Halka</option><option value="2">Medium</option><option value="3">Bahut tez</option></select><input id="days" type="number" placeholder="Kitne din se?"></div>
+ <label id="pregL" hidden><input type="checkbox" id="preg"> Pregnant hain?</label>
+ <div id="symList" class="chips"></div><button onclick="runCheck()">Analyze karein</button><div id="result"></div></section>
+<section id="body" class="tab card"><h2>Full Body Checker</h2><p>Jahan takleef hai woh hissa chunein:</p><div id="parts" class="chips"></div></section>
+<section id="meds" class="tab card"><h2>Medicine Reminder</h2>
+ <div class="row"><input id="mname" placeholder="Medicine naam"><input id="mtime" type="time"><button onclick="addMed()">Add</button></div>
+ <button class="ghost" onclick="Notification.requestPermission()">🔔 Notification allow karein</button><ul id="medList"></ul></section>
+<section id="docs" class="tab card"><h2>Nearby Doctor</h2>
+ <select id="spec"></select><button onclick="findDoc()">📍 Mere paas dhundein</button><p><small>Google Maps khulega aapki location ke aas-paas ke doctors ke saath.</small></p></section>
+<section id="bot" class="tab card"><h2>🤖 AI Health Bot</h2><div id="chat"></div>
+ <div class="row"><input id="msg" placeholder="Poochiye: neend, diet, bukhar..." onkeydown="if(event.key==='Enter')ask()"><button onclick="ask()">Send</button></div></section>
+<section id="rec" class="tab card"><h2>Mera Health Record</h2><ul id="recList"></ul>
+ <button onclick="exportData()">⬇️ Data download</button><button class="ghost" onclick="wipe()">🗑 Sab delete</button></section>
+<section id="sos" class="tab card"><h2>🚨 Emergency SOS</h2>
+ <input id="ecName" placeholder="Emergency contact naam"><input id="ecPhone" placeholder="Contact number (91...)">
+ <button class="sosbig" onclick="sos()">SOS: Location bhejein</button>
+ <a class="btn" href="tel:112">📞 112 Call</a><a class="btn" href="tel:108">🚑 108 Ambulance</a></section>
+</main>
+<footer><small>⚠️ Yeh sirf jaankari ke liye hai, doctor ka vikalp nahi. Emergency mein turant 112/108.</small></footer>
+</div>
+<script src="js/data.js"></script><script src="js/app.js"></script></body></html>
