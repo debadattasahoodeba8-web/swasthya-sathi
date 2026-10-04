@@ -1,0 +1,19 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Admin – SwasthyaSathi</title><link rel="stylesheet" href="css/style.css"></head><body>
+<section id="login" class="card center"><h1>Admin</h1><input id="em" type="email" placeholder="Admin email"><input id="pw" type="password" placeholder="Password"><button onclick="emLogin()">Login with email</button><p style="color:var(--m)">or use phone OTP</p><input id="phone" placeholder="Admin mobile (10 digits)" maxlength="10" inputmode="numeric"><button id="sendBtn" onclick="sendOtp()">Send OTP</button>
+<div id="otpBox" hidden><input id="otp" placeholder="OTP" maxlength="6" inputmode="numeric"><button onclick="verify()">Login</button></div></section>
+<main id="panel" hidden><div class="card"><h2>Patients <span id="cnt"></span></h2><button onclick="dlAll()">⬇️ Download all (JSON)</button></div><div id="list"></div></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script>
+firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),fs=firebase.firestore(),$=s=>document.querySelector(s);let verifier,conf,rows=[];
+function sendOtp(){verifier=verifier||new firebase.auth.RecaptchaVerifier("sendBtn",{size:"invisible"});auth.signInWithPhoneNumber("+91"+$("#phone").value.trim(),verifier).then(r=>{conf=r;$("#otpBox").hidden=false}).catch(e=>alert(e.message))}
+function emLogin(){auth.signInWithEmailAndPassword($("#em").value.trim(),$("#pw").value).catch(()=>alert("Wrong email or password"))}
+function verify(){conf.confirm($("#otp").value.trim()).catch(()=>alert("Wrong OTP"))}
+auth.onAuthStateChanged(u=>{if(u)load()});
+const esc=t=>String(t||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function load(){try{const s=await fs.collection("users").get();rows=s.docs.map(d=>({id:d.id,...d.data()}));$("#login").hidden=true;$("#panel").hidden=false;$("#cnt").textContent="("+rows.length+")";
+ $("#list").innerHTML=rows.map((r,i)=>`<div class="card"><b>${esc(r.name)}</b> ${esc(r.phone||r.email)} ${r.deleteRequested?"<span class='alert'>Deletion requested</span>":""}<br><small>${(r.rec||[]).length} records, ${(r.meds||[]).length} medicines</small><br><button onclick="dl(${i})">⬇️ Download</button><button class="ghost" onclick="del(${i})">🗑 Delete</button></div>`).join("")}catch(e){alert("Access denied. This account is not an admin.");auth.signOut()}}
+function save(o,n){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:"application/json"}));a.download=n;a.click()}
+const dl=i=>save(rows[i],"patient-"+rows[i].id+".json"),dlAll=()=>save(rows,"all-patients.json");
+async function del(i){if(confirm("Permanently delete "+rows[i].name+"'s data?")){await fs.collection("users").doc(rows[i].id).delete();load()}}
+</script></body></html>
